@@ -8,3 +8,8 @@ step:2
 
 step:3
     node modules installation- #npm i
+
+step:4
+     create home.jsx
+     installed: tailwindCSS
+         
