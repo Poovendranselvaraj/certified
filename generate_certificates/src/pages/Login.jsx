@@ -1,56 +1,46 @@
-"use client"
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Link } from 'react-router-dom';
+import { loginUser } from '../features/auth/authSlice';
+// import { RootState, AppDispatch } from '../app/store';
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertCircle } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { status, error, isAuthenticated } = useSelector((state) => state.auth);
 
-export default function SignInPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState(false)
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
-    setSuccess(false)
-
-    try {
-      const response = await fetch("http://localhost:8000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Login failed")
-      }
-
-      const data = await response.json()
-      localStorage.setItem("access_token", data.access_token)
-      setSuccess(true)
-      setEmail("")
-      setPassword("")
-    } catch (err) {
-      setError("An error occurred during sign-in. Please try again.")
+    e.preventDefault();
+    const resultAction = await dispatch(loginUser({ email, password }));
+    if (loginUser.fulfilled.match(resultAction)) {
+      navigate('/');
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Sign In</CardTitle>
-          <CardDescription>Enter your credentials to access your account.</CardDescription>
+          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardDescription>Enter your credentials to access your account</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -73,26 +63,28 @@ export default function SignInPage() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Sign In
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <Button type="submit" className="w-full" disabled={status === 'loading'}>
+              {status === 'loading' ? 'Logging in...' : 'Log in'}
             </Button>
-          </form>
-          {error && (
-            <Alert variant="destructive" className="mt-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          {success && (
-            <Alert className="mt-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Success</AlertTitle>
-              <AlertDescription>You have successfully signed in!</AlertDescription>
-            </Alert>
-          )}
-        </CardContent>
+            <div className="text-center">
+              <span>Don't have an account? </span>
+              <Link to="/register" className="text-blue-500 hover:underline">Register here</Link>
+            </div>
+          </CardFooter>
+        </form>
+        {status === 'failed' && (
+          <Alert className="mt-4 bg-red-100">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        {location.state?.from && (
+          <Alert className="mt-4 bg-blue-100">
+            <AlertDescription>You must log in to view that page.</AlertDescription>
+          </Alert>
+        )}
       </Card>
     </div>
-  )
+  );
 }
