@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Home from './Home'
-
+import Register from './pages/Register'
+import Login from './pages/Login'
 
 
 function App() {
@@ -8,9 +9,12 @@ function App() {
 
   return (
     <>
-      <Home />
+      {/* <Home /> */}
+      {/* <Register /> */}
+      <Login />
     </>
   )
 }
 
 export default App
+ 
