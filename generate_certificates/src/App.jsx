@@ -4,9 +4,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store } from './app/store';
 import { checkAuth } from './features/auth/authSlice';
-import Register from '/pages/register';
-import Login from '/pages/Login';
-import HomePage from './pages/HomePage';
+import Register from './pages/Register';
+import Login from './pages/Login';
+import Home from './pages/Home';
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from './pages/NotFound';
 // import { RootState } from './app/store';
@@ -29,7 +29,7 @@ function AppContent() {
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+        <Route path="/Home" element={<PrivateRoute><Home /></PrivateRoute>} />
         <Route 
           path="*" 
          element= {<NotFound/>} 
