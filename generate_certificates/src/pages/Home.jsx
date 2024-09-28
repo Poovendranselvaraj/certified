@@ -39,7 +39,7 @@ export default function Home() {
         if (response.status === 401) {
           throw new Error('Unauthorized: Please log in again');
         }
-        throw new Error('Failed to fetch employees');
+        throw new Error('Failed to fetch users');
       }
       const data = await response.json();
       setUsers(data);
